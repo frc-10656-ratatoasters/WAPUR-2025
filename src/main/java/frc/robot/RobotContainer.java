@@ -30,6 +30,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.grabber.Grabber;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -41,6 +43,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Grabber grabber;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -84,6 +87,8 @@ public class RobotContainer {
                 new ModuleIO() {});
         break;
     }
+
+    grabber = new Grabber();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -132,6 +137,9 @@ public class RobotContainer {
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> new Rotation2d()));
+
+    controller.leftTrigger(.1).whileTrue(
+    grabber.setIntakeSpeed(-1)); // left trigger is outake
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
