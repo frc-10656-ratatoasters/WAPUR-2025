@@ -30,6 +30,7 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.grabber.Grabber;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -44,6 +45,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Grabber grabber;
+  private final Elevator elevator;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -89,6 +91,7 @@ public class RobotContainer {
     }
 
     grabber = new Grabber();
+    elevator = new Elevator();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -138,8 +141,21 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () -> new Rotation2d()));
 
-    controller.leftTrigger(.1).whileTrue(
-    grabber.setIntakeSpeed(-1)); // left trigger is outake
+    controller
+    .leftTrigger(.1).whileTrue(
+    grabber.setIntakeSpeedCommand(-1)); // left trigger is outake
+
+    controller
+    .leftBumper().whileTrue(
+    grabber.setIntakeSpeedCommand(1)); //left bumper in intake
+    
+    controller
+    .y().whileTrue(
+    elevator.setElevatorSpeedCommand(1)); //y is raise elevator
+
+    controller
+    .a().whileTrue(
+    elevator.setElevatorSpeedCommand(-1));//a is lower elevator
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
