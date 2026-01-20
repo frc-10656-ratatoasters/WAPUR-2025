@@ -27,6 +27,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -108,7 +109,7 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-
+    
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -257,6 +258,9 @@ public class Drive extends SubsystemBase {
     }
   }
 
+  public SwerveDrivePoseEstimator getPoseEstimator() {
+    return poseEstimator;
+  }
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());

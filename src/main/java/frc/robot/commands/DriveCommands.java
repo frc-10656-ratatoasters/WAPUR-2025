@@ -29,12 +29,17 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+
+import static edu.wpi.first.units.Units.Rotation;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -46,6 +51,11 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  //should adjust later!
+  private static final double DRIVE_KP = .002;
+  private static final double DRIVE_KI = 0.0;
+  private static final double DRIVE_KD = 0.0;
+  
 
   private DriveCommands() {}
 
@@ -91,7 +101,7 @@ public class DriveCommands {
                   omega * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
+                  && DriverStation.getAlliance().get() == Alliance.Red;   
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds,
@@ -112,8 +122,8 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Rotation2d> rotationSupplier) {
-
-    // Create PID controller
+          
+    // Create rotation PID controller
     ProfiledPIDController angleController =
         new ProfiledPIDController(
             ANGLE_KP,
@@ -287,6 +297,42 @@ public class DriveCommands {
                               + " inches");
                     })));
   }
+  public static Command goToTowerRight(Drive drive){
+    double[] setpointX ={ 4.00};
+    double[] setpointY = {2.0};
+    double[] setpointRotation ={ 0.0};
+
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if(ally.isPresent()){
+      if(ally.get() == Alliance.Blue){
+       setpointY[0] = 5.0;
+       setpointX[0] = 14.0;
+       setpointRotation[0] = 180.0;
+      }
+    }
+    else{
+      System.out.println("Alliance is nothing for some reason???????? ");
+    }
+    ProfiledPIDController anglePIDController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+  ProfiledPIDController xPIDController = new ProfiledPIDController(DRIVE_KP, DRIVE_KP, DRIVE_KD, null);
+  ProfiledPIDController yPIDController = new ProfiledPIDController(DRIVE_KP, DRIVE_KI, DRIVE_KD, null);
+  return Commands.run(()-> {
+    
+    double angleOutput = anglePIDController.calculate(drive.getPoseEstimator().getEstimatedPosition().getRotation().getDegrees(), setpointRotation[0]);
+    double xOutput = xPIDController.calculate(drive.getPoseEstimator().getEstimatedPosition().getX(), setpointX[0]);
+    double yOutput = yPIDController.calculate(drive.getPoseEstimator().getEstimatedPosition().getY(), setpointY[0]);
+    Translation2d linearOutput =
+        getLinearVelocityFromJoysticks(xOutput, yOutput);
+    Rotation2d rotationOutput = new Rotation2d(angleOutput);
+    
+  });
+
+}
 
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];
