@@ -27,7 +27,6 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -109,7 +108,7 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-    
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -166,6 +165,9 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     String poseString = getPose().toString();
     SmartDashboard.putString("CurrentPose", poseString);
+    poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
+    // puts vision estimate in elastic
+    SmartDashboard.putString("VisionPose", LimelightHelpers.getBotPose2d("").toString());
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -218,11 +220,9 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
-    //puts vision estimate in elastic
-    SmartDashboard.putString("VisionPose", LimelightHelpers.getBotPose2d("").toString());
-    //add vision estimate
-       poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
 
+    // add vision estimate
+    poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   }
