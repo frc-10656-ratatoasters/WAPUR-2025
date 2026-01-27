@@ -19,8 +19,9 @@ public class Climber extends SubsystemBase {
   public void startClimber() {
     // Code to start the climber mechanism
   }
-
+//prob should make command
   public void stopClimber() {
     // Code to stop the climber mechanism
+    //probably does some sort of locking thing so it doeesnt fall off
   }
 }

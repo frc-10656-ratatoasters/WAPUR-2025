@@ -31,7 +31,9 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.grabber.Grabber;
+import frc.robot.subsystems.hopper.Hopper;
+import frc.robot.subsystems.intake.Intake;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -43,11 +45,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Grabber grabber;
   private final Elevator elevator;
-
+  private final Intake intake;
+  private final Hopper hopper = new Hopper();
   // Controller
-  public final CommandXboxController controller = new CommandXboxController(0);
+  public final CommandXboxController DriveController = new CommandXboxController(0);
+  public final CommandXboxController OperatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   public final LoggedDashboardChooser<Command> autoChooser;
@@ -89,8 +92,8 @@ public class RobotContainer {
         break;
     }
 
-    grabber = new Grabber();
     elevator = new Elevator();
+    intake = new Intake();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -128,35 +131,37 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -DriveController.getLeftY(),
+            () -> -DriveController.getLeftX(),
+            () -> -DriveController.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    DriveController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -DriveController.getLeftY(),
+                () -> -DriveController.getLeftX(),
                 () -> new Rotation2d()));
 
-    controller
-        .leftTrigger(.1)
-        .whileTrue(grabber.setIntakeSpeedCommand(-1)); // left trigger is outake
+    OperatorController.leftTrigger(.1).whileTrue(intake.IntakeCommand()); // left trigger is outake
+    OperatorController.rightTrigger().whileTrue(intake.OuttakeCommand()); // left bumper in intake
+    OperatorController.leftBumper().whileTrue(intake.extendArmCommand());
+    OperatorController.rightBumper().whileTrue(intake.retractArmCommand());
+    OperatorController.rightTrigger(.1).whileTrue(hopper.setAgitatorSpeedCommand(-1));//MIGHT BE BACKWARDS
+    OperatorController.rightTrigger(.1).whileFalse(hopper.setAgitatorSpeedCommand(1));
+    DriveController.x().onTrue(DriveCommands.goToTowerLeft(drive));
+    DriveController.b().onTrue(DriveCommands.goToTowerRight(drive));
+    //controller.y().whileTrue(elevator.setElevatorSpeedCommand(1)); // y is raise elevator
 
-    controller.leftBumper().whileTrue(grabber.setIntakeSpeedCommand(1)); // left bumper in intake
-
-    controller.y().whileTrue(elevator.setElevatorSpeedCommand(1)); // y is raise elevator
-
-    controller.a().whileTrue(elevator.setElevatorSpeedCommand(-1)); // a is lower elevator
+    //controller.a().whileTrue(elevator.setElevatorSpeedCommand(-1)); // a is lower elevator
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    DriveController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    DriveController
         .b()
         .onTrue(
             Commands.runOnce(

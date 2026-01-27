@@ -1,13 +1,23 @@
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   // Add any necessary motor controllers, sensors, or other components here
-
-  public Intake() {
+  private final TalonFX intakeMotor; // States our motor name
+  private final TalonFX armMotor;
+  private final double armTopLimit = 0;//make sure zero is arm up, or adjust later
+  private final double armBottomLimit = 0.125;// in rotations, ADJUST LATER
+  public Intake () {
     // Constructor for the Intake subsystem
     // Initialize components here
+    intakeMotor = new TalonFX(10);//change
+    armMotor = new TalonFX(11);//CHANGE and make sure its not something else
   }
 
   @Override
@@ -16,11 +26,63 @@ public class Intake extends SubsystemBase {
   }
 
   // Add methods to control the intake subsystem
-  public void startIntake() {
+  public void intake() {
+    intakeMotor.set (0.5);
     // Code to start the intake mechanism
   }
+  public Command extendArmCommand(){
+    return new InstantCommand(()->{
+      extendArm();
+    }, this);
+  }
+  public Command retractArmCommand(){
+    return new InstantCommand(()->{
+      retractArm();
+    }, this);
+  }
+
+  public Command IntakeCommand(){
+    return new InstantCommand(
+        () -> {
+            intake();
+        },
+        this);
+  }
+  public void outake(){
+
+    intakeMotor.set(-0.5);
+  }
+  public Command OuttakeCommand(){
+    return new InstantCommand(
+        () -> {
+            outake();
+        },
+        this);
+  }
+  public void setIntakeSpeed(int speed) {// BE CAREFUL doesnt put in limits and stuff
+    intakeMotor.set(-speed); // may have to reverse
+  }
+
+  public void retractArm(){
+    if(armMotor.getPosition().getValueAsDouble() > armTopLimit){
+        armMotor.set(-0.3);
+        } 
+    else {
+        armMotor.set(0);
+        }
+    }
+    public void extendArm(){
+      if(armMotor.getPosition().getValueAsDouble() < armBottomLimit){
+          armMotor.set(0.3);
+          } 
+      else {
+          armMotor.set(0);
+          }
+  }
+
 
   public void stopIntake() {
     // Code to stop the intake mechanism
+    intakeMotor.set(0);
   }
 }

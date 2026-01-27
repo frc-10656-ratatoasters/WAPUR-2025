@@ -166,8 +166,7 @@ public class Drive extends SubsystemBase {
     String poseString = getPose().toString();
     SmartDashboard.putString("CurrentPose", poseString);
     poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
-    // puts vision estimate in elastic
-    SmartDashboard.putString("VisionPose", LimelightHelpers.getBotPose2d("").toString());
+    System.out.println("vision estimate: " + LimelightHelpers.getBotPose2d(""));
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
