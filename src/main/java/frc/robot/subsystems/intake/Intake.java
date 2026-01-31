@@ -30,6 +30,9 @@ public class Intake extends SubsystemBase {
     intakeMotor.set (0.5);
     // Code to start the intake mechanism
   }
+ 
+
+  
   public Command extendArmCommand(){
     return new InstantCommand(()->{
       extendArm();
