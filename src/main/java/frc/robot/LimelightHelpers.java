@@ -745,13 +745,22 @@ public class LimelightHelpers {
    * @return Array of RawFiducial objects containing detection details
    */
   public static RawFiducial[] getRawFiducials(String limelightName) {
+    System.out.println("Get RawFiducials called");
     var entry = LimelightHelpers.getLimelightNTTableEntry(limelightName, "rawfiducials");
     var rawFiducialArray = entry.getDoubleArray(new double[0]);
+    
+    for(double thing : rawFiducialArray){
+      System.out.println("entry:" + thing);
+    }
     int valsPerEntry = 7;
     if (rawFiducialArray.length % valsPerEntry != 0) {
       return new RawFiducial[0];
     }
-
+    else{
+      System.out.println("length of raw fiducialArray wrong?");
+      System.out.println("its "+ rawFiducialArray.length);
+    }
+   
     int numFiducials = rawFiducialArray.length / valsPerEntry;
     RawFiducial[] rawFiducials = new RawFiducial[numFiducials];
 
@@ -868,6 +877,8 @@ public class LimelightHelpers {
   }
 
   public static NetworkTableEntry getLimelightNTTableEntry(String tableName, String entryName) {
+    System.out.println("got the networktable entry");
+    System.out.println("networktable entry is " + getLimelightNTTable(tableName).getEntry(entryName).toString());
     return getLimelightNTTable(tableName).getEntry(entryName);
   }
 
@@ -1215,6 +1226,12 @@ public class LimelightHelpers {
    */
   public static Pose3d getBotPose3d_wpiBlue(String limelightName) {
     double[] poseArray = getLimelightNTDoubleArray(limelightName, "botpose_wpiblue");
+    System.out.println("got the 3d pose from limelight, returned");
+    for(double pose : poseArray){
+      System.out.println(pose + "/n");
+
+    }
+
     return toPose3D(poseArray);
   }
 
@@ -1282,6 +1299,7 @@ public class LimelightHelpers {
   public static Pose2d getBotPose2d_wpiBlue(String limelightName) {
 
     double[] result = getBotPose_wpiBlue(limelightName);
+    System.out.println("getBotPose2d for blue called, returning " + result.toString());
     return toPose2D(result);
   }
 

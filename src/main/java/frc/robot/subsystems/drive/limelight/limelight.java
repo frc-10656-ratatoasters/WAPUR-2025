@@ -6,13 +6,20 @@ import frc.robot.LimelightHelpers;
 public class limelight {
 
   public static void periodic() {
-    String Ids = "";
-
-    LimelightHelpers.RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("");
-
-    for (LimelightHelpers.RawFiducial f : fiducials) {
-      Ids = Ids + " " + f.id;
+   // String IdsOne = "";
+  //  String IdsTwo = "";
+   System.out.println("Limelight Periodic Ran");
+    LimelightHelpers.RawFiducial[] fiducialsOne = LimelightHelpers.getRawFiducials("limelight-one");
+    //LimelightHelpers.RawFiducial[] fiducialsTwo = LimelightHelpers.getRawFiducials("limelight-two");
+/*     for (LimelightHelpers.RawFiducial f : fiducialsOne) {
+     IdsOne = IdsOne + " " + f.id;
     }
-    SmartDashboard.putString("IdList", Ids);
+     for (LimelightHelpers.RawFiducial f : fiducialsTwo) {
+      IdsTwo = IdsTwo + " " + f.id;
+    }
+    SmartDashboard.putString("Ids", IdsOne + IdsTwo);
+*/
+    
   }
+   
 }

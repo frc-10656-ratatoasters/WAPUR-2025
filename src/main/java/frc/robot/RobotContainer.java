@@ -13,11 +13,18 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -53,10 +60,14 @@ public class RobotContainer {
   public final CommandXboxController OperatorController = new CommandXboxController(1);
 
   // Dashboard inputs
-  public final LoggedDashboardChooser<Command> autoChooser;
+  public final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+  public RobotContainer() 
+  {
+
+  
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -94,7 +105,18 @@ public class RobotContainer {
 
     elevator = new Elevator();
     intake = new Intake();
+    //Registers the names of our commands for Path planner
+    NamedCommands.registerCommand("Intake", intake.IntakeCommand());
+    NamedCommands.registerCommand("Outtake", intake.OuttakeCommand());
+    NamedCommands.registerCommand("Stop Intake", intake.stopIntakeCommand());
 
+    NamedCommands.registerCommand("Extend Arm", intake.extendArmCommand());
+    NamedCommands.registerCommand("Retract Arm", intake.retractArmCommand());
+    
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+/* 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption("goToTowerRight", DriveCommands.goToTowerRight(drive));
@@ -115,9 +137,19 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        //making a new auton chooser
+    //public static SendableChooser<Command> mainAutoChooser = AutoBuilder.buildAutoChooser();
+*/
+    //SmartDashboard.putData("Auto Chooser", mainAutoChooser);
+
+
+    
+        
+    
 
     // Configure the button bindings
     configureButtonBindings();
+
   }
 
   /**
@@ -160,6 +192,14 @@ public class RobotContainer {
     // Switch to X pattern when X button is pressed
     DriveController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
+    OperatorController.x().onTrue((Constants.currentMode == Constants.Mode.REAL) ? Commands.runOnce(drive :: resetGyro, drive) : null);
+      Commands.runOnce(() -> {
+        Pigeon2 pigeon = new Pigeon2(
+          TunerConstants.DrivetrainConstants.Pigeon2Id,
+          TunerConstants.DrivetrainConstants.CANBusName);
+        pigeon.reset();
+      }); Commands.none();
+    
     // Reset gyro to 0° when B button is pressed
     DriveController
         .b()
@@ -177,7 +217,10 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    //return mainAutoChooser.getSelected();
+    return autoChooser.getSelected();
   }
+
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   // Add any necessary motor controllers, sensors, or other components here
+  private String intakeState = "neutral"; 
   private final TalonFX intakeMotor; // States our motor name
   private final TalonFX armMotor;
   private final double armTopLimit = 0;//make sure zero is arm up, or adjust later
@@ -16,12 +17,22 @@ public class Intake extends SubsystemBase {
   public Intake () {
     // Constructor for the Intake subsystem
     // Initialize components here
-    intakeMotor = new TalonFX(10);//change
-    armMotor = new TalonFX(11);//CHANGE and make sure its not something else
+    intakeMotor = new TalonFX(55);//change
+    armMotor = new TalonFX(56);//CHANGE and make sure its not something else
   }
 
   @Override
   public void periodic() {
+// Tells what state the intake is at
+    if(intakeState == "intake"){
+      intake();
+    }
+    else if(intakeState == "outtake"){
+      outake();
+    }
+    else if (intakeState == "neutral"){
+      stopIntake();
+    }
     // This method will be called once per scheduler run
   }
 
@@ -47,7 +58,7 @@ public class Intake extends SubsystemBase {
   public Command IntakeCommand(){
     return new InstantCommand(
         () -> {
-            intake();
+            intakeState = "intake";
         },
         this);
   }
@@ -58,10 +69,19 @@ public class Intake extends SubsystemBase {
   public Command OuttakeCommand(){
     return new InstantCommand(
         () -> {
-            outake();
+            intakeState = "outtake";
         },
         this);
   }
+  
+  public Command stopIntakeCommand(){
+    return new InstantCommand(
+        () -> {
+            intakeState = "neutral";
+        },
+        this);
+  }
+
   public void setIntakeSpeed(int speed) {// BE CAREFUL doesnt put in limits and stuff
     intakeMotor.set(-speed); // may have to reverse
   }

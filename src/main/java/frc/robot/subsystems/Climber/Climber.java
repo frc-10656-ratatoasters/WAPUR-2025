@@ -15,8 +15,8 @@ public class Climber extends SubsystemBase {
   public Climber() {
     // Constructor for the Climber subsystem
     // Initialize components here
-    leadElevatorMotor = new TalonFX(10); //change canID
-    followerElevatorMotor = new TalonFX(11); //change canID later
+    leadElevatorMotor = new TalonFX(57); //change canID
+    followerElevatorMotor = new TalonFX(58); //change canID later
 
     followerElevatorMotor.setControl(new Follower (10,MotorAlignmentValue.Aligned));
 
@@ -38,6 +38,7 @@ public class Climber extends SubsystemBase {
   public void stopClimber() {
     // Code to stop the climber mechanism
     //probably does some sort of locking thing so it doeesnt fall off
+    leadElevatorMotor.set(0);
   }
 
 }
