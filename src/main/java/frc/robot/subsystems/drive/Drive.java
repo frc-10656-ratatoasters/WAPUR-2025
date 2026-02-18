@@ -56,7 +56,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.limelight.Limelight;
 import frc.robot.util.LocalADStarAK;
 
-import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -69,7 +68,9 @@ public class Drive extends SubsystemBase {
   private static Pose3d limelightTwoPose;
   @AutoLogOutput
   private static Pose2d robotPose;
-  private static Optional<Alliance> alliance = DriverStation.getAlliance();
+  // Do not cache DriverStation.getAlliance() as an Optional; it may be empty
+  // in simulation before a connection is established. Query it when needed
+  // and provide a sensible default.
 
   public static RobotConfig robotConfig;
   static {
@@ -188,7 +189,9 @@ public class Drive extends SubsystemBase {
     Limelight.periodic();
     String poseString = getPose().toString();
     SmartDashboard.putString("CurrentPose", poseString);
-    if (alliance.get() == Alliance.Red) {
+
+    
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
       if (LimelightHelpers.getTV("limelight-one")) {
         poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-one").pose,
             Timer.getFPGATimestamp());
@@ -197,7 +200,7 @@ public class Drive extends SubsystemBase {
         poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-two").pose,
             Timer.getFPGATimestamp());
       }
-    } else if (alliance.get() == Alliance.Blue) {
+    } else if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
       if (LimelightHelpers.getTV("limelight-one")) {
         poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-one").pose,
             Timer.getFPGATimestamp());
