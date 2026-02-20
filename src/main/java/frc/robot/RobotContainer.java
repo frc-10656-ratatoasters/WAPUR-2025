@@ -37,7 +37,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 
@@ -52,7 +51,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
   private final Intake intake;
   private final Hopper hopper = new Hopper();
   // Controller
@@ -61,7 +59,7 @@ public class RobotContainer {
 
   // Dashboard inputs
  // public final LoggedDashboardChooser<Command> autoChooser;//the template version
- private final SendableChooser<Command> autoChooser; //pathplanner docs version
+ private final LoggedDashboardChooser<Command> autoChooser; //pathplanner docs version
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
@@ -104,9 +102,9 @@ public class RobotContainer {
         break;
     }
 
-    elevator = new Elevator();
+    
     intake = new Intake();
-    /* this is the template auto chooser stuff, we are using pathplanner auto chooser now
+    // this is the template auto chooser stuff, we are using pathplanner auto chooser now
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addOption("goToTowerRight", DriveCommands.goToTowerRight(drive));
@@ -129,7 +127,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         //making a new auton chooser
     //public static SendableChooser<Command> mainAutoChooser = AutoBuilder.buildAutoChooser();
-*/
+
     //SmartDashboard.putData("Auto Chooser", mainAutoChooser);
 
 
@@ -139,10 +137,6 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-
-    // Pathplanner auto chooser
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -204,7 +198,7 @@ public class RobotContainer {
    */
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return autoChooser.get();
   }
 
 }

@@ -57,7 +57,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.limelight.Limelight;
 import frc.robot.util.LocalADStarAK;
 
-import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -70,7 +69,9 @@ public class Drive extends SubsystemBase {
   private static Pose3d limelightTwoPose;
   @AutoLogOutput
   private static Pose2d robotPose;
-  private static Optional<Alliance> alliance = DriverStation.getAlliance();
+  // Do not cache DriverStation.getAlliance() as an Optional; it may be empty
+  // in simulation before a connection is established. Query it when needed
+  // and provide a sensible default.
 
   public static RobotConfig robotConfig;
   static {

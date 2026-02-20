@@ -31,7 +31,7 @@ public class Climber extends SubsystemBase {
   // Add methods to control the climber subsystem
   public void startClimber() {
     // Code to start the climber mechanism
-    leadElevatorMotor.set(power);
+   
 
   }
 //prob should make command
