@@ -37,7 +37,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.hopper.Hopper;
 import frc.robot.subsystems.intake.Intake;
 
@@ -52,7 +51,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Elevator elevator;
   private final Intake intake;
   private final Hopper hopper = new Hopper();
   // Controller
@@ -104,7 +102,7 @@ public class RobotContainer {
         break;
     }
 
-    elevator = new Elevator();
+    
     intake = new Intake();
     // this is the template auto chooser stuff, we are using pathplanner auto chooser now
     // Set up auto routines

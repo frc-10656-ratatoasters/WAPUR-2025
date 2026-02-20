@@ -189,9 +189,9 @@ public class Drive extends SubsystemBase {
     Limelight.periodic();
     String poseString = getPose().toString();
     SmartDashboard.putString("CurrentPose", poseString);
+   
 
-    
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+   if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
       if (LimelightHelpers.getTV("limelight-one")) {
         poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-one").pose,
             Timer.getFPGATimestamp());
