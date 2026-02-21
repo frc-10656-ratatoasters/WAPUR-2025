@@ -107,8 +107,7 @@ public class RobotContainer {
     // this is the template auto chooser stuff, we are using pathplanner auto chooser now
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    autoChooser.addOption("goToTowerRight", DriveCommands.goToTowerRight(drive));
-    autoChooser.addOption("goToTowerLeft", DriveCommands.goToTowerLeft(drive));
+
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -125,15 +124,15 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    
+    autoChooser.addOption("goToTowerRight", DriveCommands.goToTowerRight(drive));
+    autoChooser.addOption("goToTowerLeft", DriveCommands.goToTowerLeft(drive));
+
+
         //making a new auton chooser
     //public static SendableChooser<Command> mainAutoChooser = AutoBuilder.buildAutoChooser();
 
     //SmartDashboard.putData("Auto Chooser", mainAutoChooser);
-
-
-    
-        
-    
 
     // Configure the button bindings
     configureButtonBindings();

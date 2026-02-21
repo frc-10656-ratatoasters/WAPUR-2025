@@ -198,6 +198,9 @@ public class Drive extends SubsystemBase {
       LimelightHelpers.SetIMUMode("limelight-one",4 );
       LimelightHelpers.SetIMUMode("limelight-two",4 );
     }
+
+
+
     LimelightHelpers.PoseEstimate limelightOneMt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-one");
     LimelightHelpers.PoseEstimate limelightTwoMt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-two");
     if(Math.abs(gyroIO.getYawVelocityDegreesPerSec()) > 360){
@@ -226,8 +229,8 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putString("CurrentPose", poseString);
     addVisionMeasurement("limelight-one");
     addVisionMeasurement("limelight-two");
-    limelightOnePose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-one").toPose3d();
-    limelightTwoPose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-two").toPose3d();
+  //  limelightOnePose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-one").toPose3d();
+   // limelightTwoPose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-two").toPose3d();
     robotPose = poseEstimator.getEstimatedPosition();
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
